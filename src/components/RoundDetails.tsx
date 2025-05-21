@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   Box,
   Container,
@@ -11,7 +11,7 @@ import {
   Button,
 } from '@mui/material';
 import { fetchRoundDetailsRequest, clearRoundDetails, tapRequest } from '../store/slices/roundsSlice';
-import type { RootState } from '../store';
+import { useTypedSelector } from '../store/hooks';
 import { GooseArt } from './GooseArt';
 
 enum CounterStatusEnum {
@@ -80,7 +80,7 @@ const AnimatedGooseBox = styled(Box)<{ isactive: number }>`
     0% { transform: scale(1); }
     50% { transform: scale(0.95); }
     100% { transform: scale(1); }
-  }
+  };
 
   &.tapping {
     animation: tap 0.2s ease-in-out;
@@ -104,12 +104,11 @@ const RoundDetails: React.FC = () => {
   const { roundId } = useParams<{ roundId: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { currentRoundDetails: details, loading, error } = useSelector((state: RootState) => state.rounds);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { currentRoundDetails: details, loading, error } = useTypedSelector((state) => state.rounds);
+  const { user } = useTypedSelector((state) => state.auth);
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [counterStatus, setCounterStatus] = useState<CounterStatusEnum>(CounterStatusEnum.pending);
   const [isTapping, setIsTapping] = useState(false);
-  const [localPoints, setLocalPoints] = useState<number>(0);
 
   useEffect(() => {
     if (roundId) {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -14,6 +14,7 @@ import {
 import { fetchRoundsRequest, createRoundRequest } from '../store/slices/roundsSlice';
 import type { RootState } from '../store';
 import { formatLocalDateTime } from '../utils/dateFormat';
+import {useTypedSelector} from "../store/hooks";
 
 const RoundCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -35,8 +36,8 @@ const StatusText = styled(Typography)<{ status: 'active' | 'cooldown' | 'finishe
 
 const RoundsList: React.FC = () => {
   const dispatch = useDispatch();
-  const { rounds = [], loading, error } = useSelector((state: RootState) => state.rounds);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { rounds = [], loading, error } = useTypedSelector((state) => state.rounds);
+  const { user } = useTypedSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchRoundsRequest());

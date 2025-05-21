@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Card, CardContent, Typography, Stack } from '@mui/material';
-import type { RootState } from '../store';
 import { loginRequest } from '../store/slices/authSlice';
+import {useTypedSelector} from "../store/hooks";
 
 export const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, user } = useSelector((state: RootState) => state.auth);
+  const { loading, error, user } = useTypedSelector((state) => state.auth);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -71,4 +71,4 @@ export const LoginForm = () => {
       </CardContent>
     </Card>
   );
-}; 
+};
