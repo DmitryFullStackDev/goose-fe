@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline, Container, Box } from '@mui/material';
 import { store } from './store';
 import { LoginForm } from './components/LoginForm';
-import { GameRound } from './components/GameRound';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import RoundsList from './components/RoundsList';
 import RoundDetails from './components/RoundDetails';
@@ -35,10 +34,8 @@ const AppContent = () => {
             <Route element={<ProtectedRoute />}>
               <Route path="/rounds" element={<RoundsList />} />
               <Route path="/rounds/:roundId" element={<RoundDetails />} />
-              <Route path="/game/:roundId" element={<GameRound />} />
             </Route>
             <Route path="/" element={<Navigate to="/rounds" replace />} />
-            <Route path="/game" element={<Navigate to="/rounds" replace />} />
           </Routes>
         </Container>
       </Box>
