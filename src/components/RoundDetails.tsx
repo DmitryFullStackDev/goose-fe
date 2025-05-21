@@ -100,6 +100,12 @@ const PointsText = styled(Typography)`
   }
 `;
 
+interface TapResponse {
+  message: string;
+  tapsCount: number;
+  points: number;
+}
+
 const RoundDetails: React.FC = () => {
   const { roundId } = useParams<{ roundId: string }>();
   const dispatch = useDispatch();
@@ -109,8 +115,7 @@ const RoundDetails: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [counterStatus, setCounterStatus] = useState<CounterStatusEnum>(CounterStatusEnum.pending);
   const [isTapping, setIsTapping] = useState(false);
-  const [points, setPoints] = useState<number>(0);
-  const [isPointsUpdated, setIsPointsUpdated] = useState(false);
+  const [localPoints, setLocalPoints] = useState<number>(0);
 
   useEffect(() => {
     if (roundId) {
@@ -244,7 +249,7 @@ const RoundDetails: React.FC = () => {
 
         <Divider sx={{ mb: 3 }} />
 
-        <AnimatedGooseBox 
+        <AnimatedGooseBox
           isactive={isActive ? 1 : 0}
           onClick={handleGooseTap}
           className={isTapping ? 'tapping' : ''}
@@ -263,7 +268,11 @@ const RoundDetails: React.FC = () => {
           </TimeText>
         )}
 
-        {isFinished ? (
+        {!isFinished ? (
+          <Typography variant="h6" align="center">
+            Мои очки - {userPoints}
+          </Typography>
+        ) : (
           <>
             <Divider sx={{ my: 2 }} />
             <StatsBox>
@@ -281,10 +290,6 @@ const RoundDetails: React.FC = () => {
               <Typography variant="body1" fontWeight="bold">{userPoints}</Typography>
             </StatsBox>
           </>
-        ) : (
-          <Typography variant="h6" align="center">
-            Мои очки - {userPoints}
-          </Typography>
         )}
       </BorderBox>
     </Container>

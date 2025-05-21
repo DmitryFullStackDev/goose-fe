@@ -27,7 +27,9 @@ interface RoundsResponse {
 }
 
 interface TapResponse {
-  score: number;
+  message: string;
+  tapsCount: number;
+  points: number;
 }
 
 function* fetchRoundsSaga(): Generator<any, void, any> {
@@ -61,7 +63,7 @@ function* tapSaga(action: PayloadAction<number>): Generator<any, void, any> {
 
     yield put(tapSuccess({
       roundId: action.payload,
-      score: response.data.score
+      points: response.data.points
     }));
   } catch (error: any) {
     console.error('Tap error:', error.response?.data || error.message);

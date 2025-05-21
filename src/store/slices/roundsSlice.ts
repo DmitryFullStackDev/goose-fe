@@ -98,14 +98,14 @@ const roundsSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    tapSuccess: (state, action: PayloadAction<{ roundId: number; score: number }>) => {
+    tapSuccess: (state, action: PayloadAction<{ roundId: number; points: number }>) => {
       state.loading = false;
-      if (state.currentRound?.id === action.payload.roundId) {
-        state.currentRound.myScore = action.payload.score;
+      if (state.currentRoundDetails) {
+        state.currentRoundDetails.userPoints = action.payload.points;
       }
       const roundIndex = state.rounds.findIndex(r => r.id === action.payload.roundId);
       if (roundIndex !== -1) {
-        state.rounds[roundIndex].myScore = action.payload.score;
+        state.rounds[roundIndex].myScore = action.payload.points;
       }
     },
     tapFailure: (state, action: PayloadAction<string>) => {
@@ -191,4 +191,4 @@ export const {
   fetchRoundFailure,
 } = roundsSlice.actions;
 
-export default roundsSlice.reducer; 
+export default roundsSlice.reducer;
