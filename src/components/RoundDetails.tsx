@@ -10,7 +10,7 @@ import {
   Divider,
   Button,
 } from '@mui/material';
-import { fetchRoundDetailsRequest, clearRoundDetails } from '../store/slices/roundsSlice';
+import { fetchRoundDetailsRequest, clearRoundDetails, tapRequest } from '../store/slices/roundsSlice';
 import type { RootState } from '../store';
 import { GooseArt } from './GooseArt';
 
@@ -60,6 +60,46 @@ const StatsBox = styled(Box)`
   margin-top: ${props => props.theme.spacing(2)};
 `;
 
+const AnimatedGooseBox = styled(Box)<{ isactive: number }>`
+  cursor: ${props => props.isactive ? 'pointer' : 'default'};
+  transition: all 0.3s ease-in-out;
+  transform-origin: center;
+  
+  ${props => props.isactive && `
+    &:hover {
+      transform: scale(1.02);
+    }
+    
+    &:active {
+      transform: scale(0.98);
+      transition: all 0.1s ease-in-out;
+    }
+  `}
+
+  @keyframes tap {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+
+  &.tapping {
+    animation: tap 0.2s ease-in-out;
+  }
+`;
+
+const PointsText = styled(Typography)`
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: ${props => props.theme.spacing(2)} 0;
+  transition: all 0.3s ease-in-out;
+
+  &.points-updated {
+    color: ${props => props.theme.palette.success.main};
+    transform: scale(1.1);
+  }
+`;
+
 const RoundDetails: React.FC = () => {
   const { roundId } = useParams<{ roundId: string }>();
   const dispatch = useDispatch();
@@ -68,6 +108,9 @@ const RoundDetails: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [counterStatus, setCounterStatus] = useState<CounterStatusEnum>(CounterStatusEnum.pending);
+  const [isTapping, setIsTapping] = useState(false);
+  const [points, setPoints] = useState<number>(0);
+  const [isPointsUpdated, setIsPointsUpdated] = useState(false);
 
   useEffect(() => {
     if (roundId) {
@@ -134,6 +177,14 @@ const RoundDetails: React.FC = () => {
     navigate('/rounds');
   };
 
+  const handleGooseTap = () => {
+    if (isActive && roundId) {
+      setIsTapping(true);
+      dispatch(tapRequest(Number(roundId)));
+      setTimeout(() => setIsTapping(false), 200);
+    }
+  };
+
   if (loading && !details) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -193,9 +244,13 @@ const RoundDetails: React.FC = () => {
 
         <Divider sx={{ mb: 3 }} />
 
-        <Box sx={{ cursor: isActive ? 'pointer' : 'default' }}>
+        <AnimatedGooseBox 
+          isactive={isActive ? 1 : 0}
+          onClick={handleGooseTap}
+          className={isTapping ? 'tapping' : ''}
+        >
           <GooseArt />
-        </Box>
+        </AnimatedGooseBox>
 
         <StatusText variant="h6" status={counterStatus}>
           {getStatusText()}

@@ -5,13 +5,12 @@ const BASE_URL = 'http://localhost:3000';
 export const API_ENDPOINTS = {
   auth: {
     login: `${BASE_URL}/auth/login`,
-    register: `${BASE_URL}/auth/register`,
   },
   rounds: {
     list: `${BASE_URL}/rounds`,
     create: `${BASE_URL}/rounds`,
     get: (id: number) => `${BASE_URL}/rounds/${id}`,
-    tap: (id: number) => `${BASE_URL}/rounds/${id}/tap`,
+    tap: (id: number) => `${BASE_URL}/goose/tap/${id}`,
     details: (id: number) => `${BASE_URL}/rounds/${id}/details`,
   },
 };
