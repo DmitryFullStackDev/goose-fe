@@ -64,27 +64,35 @@ const RoundDetails: React.FC = () => {
 
   useEffect(() => {
     if (roundId) {
-      // Initial fetch
       dispatch(fetchRoundDetailsRequest(Number(roundId)));
-
-      // Refresh data every 30 seconds instead of every second
-      const interval = setInterval(() => {
-        dispatch(fetchRoundDetailsRequest(Number(roundId)));
-      }, 30000);
-
-      return () => {
-        clearInterval(interval);
-        dispatch(clearRoundDetails());
-      };
     }
   }, [dispatch, roundId]);
 
   useEffect(() => {
+    if (details?.round?.endAt) {
+      const now = Date.now(); // Current UTC timestamp
+      const endTime = new Date(details.round.endAt).getTime(); // Server time is already in UTC
+
+      if (now < endTime) {
+        const timeUntilEnd = endTime - now;
+        const timer = setTimeout(() => {
+          dispatch(fetchRoundDetailsRequest(Number(roundId)));
+        }, timeUntilEnd);
+
+        return () => {
+          clearTimeout(timer);
+          dispatch(clearRoundDetails());
+        };
+      }
+    }
+  }, [dispatch, roundId, details?.round?.endAt]);
+
+  useEffect(() => {
     if (details) {
       const updateTimer = () => {
-        const now = new Date().getTime();
-        const start = new Date(details.round.startAt).getTime();
-        const end = new Date(details.round.endAt).getTime();
+        const now = Date.now(); // Current UTC timestamp
+        const start = new Date(details.round.startAt).getTime(); // Server time is already in UTC
+        const end = new Date(details.round.endAt).getTime(); // Server time is already in UTC
 
         if (now < start) {
           // Cooldown phase - calculate remaining time until start
@@ -112,7 +120,6 @@ const RoundDetails: React.FC = () => {
       };
 
       updateTimer();
-
       const timer = setInterval(updateTimer, 1000);
       return () => clearInterval(timer);
     }
