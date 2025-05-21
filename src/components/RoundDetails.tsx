@@ -14,6 +14,13 @@ import { fetchRoundDetailsRequest, clearRoundDetails } from '../store/slices/rou
 import type { RootState } from '../store';
 import { GooseArt } from './GooseArt';
 
+enum CounterStatusEnum {
+  pending,
+  cooldown,
+  active,
+  finished
+}
+
 const BorderBox = styled(Box)`
   border: 1px solid ${props => props.theme.palette.divider};
   border-radius: ${props => props.theme.shape.borderRadius}px;
@@ -27,14 +34,14 @@ const Header = styled(Box)`
   margin-bottom: ${props => props.theme.spacing(2)};
 `;
 
-const StatusText = styled(Typography)<{ status: 'active' | 'cooldown' | 'finished' }>(
+const StatusText = styled(Typography)<{ status: CounterStatusEnum }>(
   ({ theme, status }) => ({
     textAlign: 'center',
     marginTop: theme.spacing(2),
     color:
-      status === 'active'
+      status === CounterStatusEnum.active
         ? theme.palette.success.main
-        : status === 'cooldown'
+        : status === CounterStatusEnum.cooldown
         ? theme.palette.warning.main
         : theme.palette.text.secondary,
   })
@@ -60,7 +67,7 @@ const RoundDetails: React.FC = () => {
   const { currentRoundDetails: details, loading, error } = useSelector((state: RootState) => state.rounds);
   const { user } = useSelector((state: RootState) => state.auth);
   const [timeLeft, setTimeLeft] = useState<string>('');
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [counterStatus, setCounterStatus] = useState<CounterStatusEnum>(CounterStatusEnum.pending);
 
   useEffect(() => {
     if (roundId) {
@@ -70,8 +77,8 @@ const RoundDetails: React.FC = () => {
 
   useEffect(() => {
     if (details?.round?.endAt) {
-      const now = Date.now(); // Current UTC timestamp
-      const endTime = new Date(details.round.endAt).getTime(); // Server time is already in UTC
+      const now = Date.now();
+      const endTime = new Date(details.round.endAt).getTime();
 
       if (now < endTime) {
         const timeUntilEnd = endTime - now;
@@ -90,12 +97,11 @@ const RoundDetails: React.FC = () => {
   useEffect(() => {
     if (details) {
       const updateTimer = () => {
-        const now = Date.now(); // Current UTC timestamp
-        const start = new Date(details.round.startAt).getTime(); // Server time is already in UTC
-        const end = new Date(details.round.endAt).getTime(); // Server time is already in UTC
+        const now = Date.now();
+        const start = new Date(details.round.startAt).getTime();
+        const end = new Date(details.round.endAt).getTime();
 
         if (now < start) {
-          // Cooldown phase - calculate remaining time until start
           const timeUntilStart = Math.ceil((start - now) / 1000);
           const hours = Math.floor(timeUntilStart / 3600);
           const minutes = Math.floor((timeUntilStart % 3600) / 60);
@@ -104,18 +110,17 @@ const RoundDetails: React.FC = () => {
           const timeString = hours > 0
             ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
             : `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
           setTimeLeft(timeString);
-          setIsTransitioning(false);
+          setCounterStatus(CounterStatusEnum.cooldown);
         } else if (now >= start && now < end) {
           const timeUntilEnd = Math.ceil((end - now) / 1000);
           const minutes = Math.floor(timeUntilEnd / 60);
           const seconds = timeUntilEnd % 60;
           setTimeLeft(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-          setIsTransitioning(false);
+          setCounterStatus(CounterStatusEnum.active);
         } else {
           setTimeLeft('');
-          setIsTransitioning(true);
+          setCounterStatus(CounterStatusEnum.finished);
         }
       };
 
@@ -152,30 +157,22 @@ const RoundDetails: React.FC = () => {
     return null;
   }
 
-  const { round, timeUntilStart, winner, userPoints } = details;
-  const now = new Date().getTime();
-  const start = new Date(round.startAt).getTime();
-  const end = new Date(round.endAt).getTime();
-
-  let status: 'active' | 'cooldown' | 'finished';
-  if (timeUntilStart > 0 || now < start) {
-    status = 'cooldown';
-  } else if (now >= start && now < end) {
-    status = 'active';
-  } else {
-    status = 'finished';
-  }
+  const { round, winner, userPoints } = details;
 
   const getStatusText = () => {
-    switch (status) {
-      case 'active':
+    switch (counterStatus) {
+      case CounterStatusEnum.active:
         return 'Раунд активен!';
-      case 'cooldown':
+      case CounterStatusEnum.cooldown:
         return 'Cooldown';
-      case 'finished':
+      case CounterStatusEnum.finished:
         return 'Раунд завершен';
     }
   };
+
+  const isActive = counterStatus === CounterStatusEnum.active
+  const isCooldown = counterStatus === CounterStatusEnum.cooldown
+  const isFinished = counterStatus === CounterStatusEnum.finished
 
   return (
     <Container maxWidth="sm">
@@ -196,22 +193,22 @@ const RoundDetails: React.FC = () => {
 
         <Divider sx={{ mb: 3 }} />
 
-        <Box sx={{ cursor: status === 'active' ? 'pointer' : 'default' }}>
+        <Box sx={{ cursor: isActive ? 'pointer' : 'default' }}>
           <GooseArt />
         </Box>
 
-        <StatusText variant="h6" status={status}>
+        <StatusText variant="h6" status={counterStatus}>
           {getStatusText()}
         </StatusText>
 
-        {status !== 'finished' && timeLeft && (
+        {!isFinished && timeLeft && (
           <TimeText variant="h6">
-            {status === 'cooldown' ? 'До начала раунда: ' : 'До конца осталось: '}
+            {isCooldown ? 'До начала раунда: ' : 'До конца осталось: '}
             {timeLeft}
           </TimeText>
         )}
 
-        {status === 'finished' ? (
+        {isFinished ? (
           <>
             <Divider sx={{ my: 2 }} />
             <StatsBox>
