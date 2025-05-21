@@ -100,12 +100,6 @@ const PointsText = styled(Typography)`
   }
 `;
 
-interface TapResponse {
-  message: string;
-  tapsCount: number;
-  points: number;
-}
-
 const RoundDetails: React.FC = () => {
   const { roundId } = useParams<{ roundId: string }>();
   const dispatch = useDispatch();

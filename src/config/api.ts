@@ -20,10 +20,9 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // This is important for sending/receiving cookies
+  withCredentials: true,
 });
 
-// Response interceptor
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {

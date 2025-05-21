@@ -10,7 +10,6 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { restoreSession } from './store/slices/authSlice';
 
-// Create a wrapper component to handle session restoration
 const AppContent = () => {
   const dispatch = useDispatch();
 

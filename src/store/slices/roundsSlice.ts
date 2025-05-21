@@ -34,7 +34,6 @@ export interface RoundsConfig {
 
 interface RoundsState {
   rounds: Round[];
-  currentRound: Round | null;
   currentRoundDetails: RoundDetails | null;
   config: RoundsConfig | null;
   loading: boolean;
@@ -43,7 +42,6 @@ interface RoundsState {
 
 const initialState: RoundsState = {
   rounds: [],
-  currentRound: null,
   currentRoundDetails: null,
   config: null,
   loading: false,
@@ -85,15 +83,6 @@ const roundsSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    setCurrentRound: (state, action: PayloadAction<Round>) => {
-      state.currentRound = {
-        ...action.payload,
-        status: calculateRoundStatus(action.payload)
-      };
-    },
-    clearCurrentRound: (state) => {
-      state.currentRound = null;
-    },
     tapRequest: (state, action: PayloadAction<number>) => {
       state.loading = true;
       state.error = null;
@@ -111,15 +100,6 @@ const roundsSlice = createSlice({
     tapFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
-    },
-    updateRoundStatuses: (state) => {
-      state.rounds = state.rounds.map(round => ({
-        ...round,
-        status: calculateRoundStatus(round)
-      }));
-      if (state.currentRound) {
-        state.currentRound.status = calculateRoundStatus(state.currentRound);
-      }
     },
     createRoundRequest: (state) => {
       state.loading = true;
@@ -173,12 +153,9 @@ export const {
   fetchRoundsRequest,
   fetchRoundsSuccess,
   fetchRoundsFailure,
-  setCurrentRound,
-  clearCurrentRound,
   tapRequest,
   tapSuccess,
   tapFailure,
-  updateRoundStatuses,
   createRoundRequest,
   createRoundSuccess,
   createRoundFailure,
