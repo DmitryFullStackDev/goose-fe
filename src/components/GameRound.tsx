@@ -4,45 +4,33 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, Typography, Box, Button, CircularProgress } from '@mui/material';
 import type { RootState } from '../store';
 import { GooseArt } from './GooseArt';
-import { tapRequest, setCurrentRound, clearCurrentRound } from '../store/slices/roundsSlice';
-import { apiClient, API_ENDPOINTS } from '../config/api';
-import type { Round } from '../store/slices/roundsSlice';
+import { tapRequest, clearCurrentRound, fetchRoundRequest } from '../store/slices/roundsSlice';
 
 export const GameRound = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { currentRound, loading } = useSelector((state: RootState) => state.rounds);
+  const { currentRound, loading, error } = useSelector((state: RootState) => state.rounds);
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
-    const fetchRound = async () => {
-      try {
-        const response = await apiClient.get<Round>(API_ENDPOINTS.rounds.get(id!));
-        dispatch(setCurrentRound(response.data));
-      } catch (error) {
-        console.error('Failed to fetch round:', error);
-        navigate('/game');
-      }
-    };
-
     if (id) {
-      fetchRound();
+      dispatch(fetchRoundRequest(id));
     }
 
     return () => {
       dispatch(clearCurrentRound());
     };
-  }, [id, dispatch, navigate]);
+  }, [id, dispatch]);
 
   useEffect(() => {
     if (!currentRound) return;
 
     const updateTimer = () => {
       const now = new Date().getTime();
-      const end = new Date(currentRound.endTime).getTime();
-      const start = new Date(currentRound.startTime).getTime();
-      
+      const end = new Date(currentRound.endAt).getTime();
+      const start = new Date(currentRound.startAt).getTime();
+
       let targetTime: number;
       if (currentRound.status === 'cooldown') {
         targetTime = start;
@@ -77,6 +65,17 @@ export const GameRound = () => {
     );
   }
 
+  if (error) {
+    return (
+      <Box display="flex" flexDirection="column" alignItems="center" gap={2} minHeight="400px" pt={4}>
+        <Typography color="error">{error}</Typography>
+        <Button variant="outlined" onClick={() => navigate('/game')}>
+          Back to Rounds
+        </Button>
+      </Box>
+    );
+  }
+
   if (!currentRound) return null;
 
   return (
@@ -84,8 +83,8 @@ export const GameRound = () => {
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6">
-            {currentRound.status === 'cooldown' ? 'Cooldown' : 
-             currentRound.status === 'active' ? 'Round Active' : 
+            {currentRound.status === 'cooldown' ? 'Cooldown' :
+             currentRound.status === 'active' ? 'Round Active' :
              'Round Finished'}
           </Typography>
           <Button
@@ -97,9 +96,9 @@ export const GameRound = () => {
           </Button>
         </Box>
 
-        <Box 
+        <Box
           onClick={currentRound.status === 'active' ? handleTap : undefined}
-          sx={{ 
+          sx={{
             cursor: currentRound.status === 'active' ? 'pointer' : 'default',
             '&:active': currentRound.status === 'active' ? {
               transform: 'scale(0.98)'
@@ -123,7 +122,7 @@ export const GameRound = () => {
         {currentRound.status === 'finished' && currentRound.winner && (
           <>
             <Typography variant="h6" align="center" sx={{ mt: 2 }}>
-              Total Score: {currentRound.totalScore}
+              Total Points: {currentRound.totalPoints}
             </Typography>
             <Typography variant="h6" align="center">
               Winner: {currentRound.winner.username} - {currentRound.winner.score}
@@ -133,4 +132,4 @@ export const GameRound = () => {
       </CardContent>
     </Card>
   );
-}; 
+};

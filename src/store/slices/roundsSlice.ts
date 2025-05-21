@@ -150,6 +150,22 @@ const roundsSlice = createSlice({
     clearRoundDetails: (state) => {
       state.currentRoundDetails = null;
     },
+    fetchRoundRequest: (state, action: PayloadAction<string>) => {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchRoundSuccess: (state, action: PayloadAction<Round>) => {
+      state.loading = false;
+      state.currentRound = {
+        ...action.payload,
+        status: calculateRoundStatus(action.payload)
+      };
+      state.error = null;
+    },
+    fetchRoundFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
@@ -170,6 +186,9 @@ export const {
   fetchRoundDetailsSuccess,
   fetchRoundDetailsFailure,
   clearRoundDetails,
+  fetchRoundRequest,
+  fetchRoundSuccess,
+  fetchRoundFailure,
 } = roundsSlice.actions;
 
 export default roundsSlice.reducer; 

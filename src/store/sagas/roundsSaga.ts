@@ -13,6 +13,9 @@ import {
   fetchRoundDetailsRequest,
   fetchRoundDetailsSuccess,
   fetchRoundDetailsFailure,
+  fetchRoundRequest,
+  fetchRoundSuccess,
+  fetchRoundFailure,
 } from '../slices/roundsSlice';
 import { apiClient, API_ENDPOINTS } from '../../config/api';
 import type { AxiosResponse } from 'axios';
@@ -100,9 +103,26 @@ function* fetchRoundDetailsSaga(action: PayloadAction<number>): Generator<any, v
   }
 }
 
+function* fetchRoundSaga(action: PayloadAction<string>): Generator<any, void, any> {
+  try {
+    const response: AxiosResponse<Round> = yield call(
+      apiClient.get,
+      API_ENDPOINTS.rounds.get(Number(action.payload))
+    );
+
+    yield put(fetchRoundSuccess(response.data));
+  } catch (error: any) {
+    console.error('Fetch round error:', error.response?.data || error.message);
+    yield put(fetchRoundFailure(
+      error.response?.data?.message || error.message || 'Failed to fetch round'
+    ));
+  }
+}
+
 export function* watchRoundsSaga(): Generator {
   yield takeLatest(fetchRoundsRequest.type, fetchRoundsSaga);
   yield takeLatest(tapRequest.type, tapSaga);
   yield takeLatest(createRoundRequest.type, createRoundSaga);
   yield takeLatest(fetchRoundDetailsRequest.type, fetchRoundDetailsSaga);
+  yield takeLatest(fetchRoundRequest.type, fetchRoundSaga);
 } 
