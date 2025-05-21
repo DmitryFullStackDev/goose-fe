@@ -10,9 +10,11 @@ import {
   Typography,
   CircularProgress,
   styled,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { fetchRoundsRequest, createRoundRequest } from '../store/slices/roundsSlice';
-import type { RootState } from '../store';
 import { formatLocalDateTime } from '../utils/dateFormat';
 import {useTypedSelector} from "../store/hooks";
 
@@ -47,6 +49,10 @@ const RoundsList: React.FC = () => {
     dispatch(createRoundRequest());
   };
 
+  const handleRefresh = () => {
+    dispatch(fetchRoundsRequest());
+  };
+
   return (
     <Container maxWidth="md">
       <Box
@@ -66,9 +72,30 @@ const RoundsList: React.FC = () => {
             flexShrink: 0
           }}
         >
-          <Typography variant="h4" component="h1">
-            Список РАУНДОВ
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h4" component="h1">
+              Список РАУНДОВ
+            </Typography>
+            <Tooltip title="Обновить список">
+              <IconButton 
+                onClick={handleRefresh} 
+                disabled={loading}
+                sx={{ 
+                  animation: loading ? 'spin 1s linear infinite' : 'none',
+                  '@keyframes spin': {
+                    '0%': {
+                      transform: 'rotate(0deg)',
+                    },
+                    '100%': {
+                      transform: 'rotate(360deg)',
+                    },
+                  },
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Typography variant="h6" component="div">
             {user?.username}
           </Typography>

@@ -25,10 +25,11 @@ const AppContent = () => {
         minHeight="100vh"
         alignItems="center"
         justifyContent="center"
+        width='100%'
         sx={{ py: 4 }}
       >
-        <Container>
-          <Routes>
+        <Container style={{display: "flex", justifyContent: 'center'}}>
+            <Routes>
             <Route path="/login" element={<LoginForm />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/rounds" element={<RoundsList />} />

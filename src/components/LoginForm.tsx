@@ -14,7 +14,7 @@ export const LoginForm = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/game');
+      navigate('/rounds');
     }
   }, [user, navigate]);
 
