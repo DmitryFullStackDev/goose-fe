@@ -246,6 +246,7 @@ const RoundDetails: React.FC = () => {
         <AnimatedGooseBox
           isactive={isActive ? 1 : 0}
           onClick={handleGooseTap}
+          onTouchStart={handleGooseTap}
           className={isTapping ? 'tapping' : ''}
         >
           <GooseArt />
