@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://my-nest-project.fly.dev:3000';
 
 export const API_ENDPOINTS = {
   auth: {
