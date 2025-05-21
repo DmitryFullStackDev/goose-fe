@@ -1,0 +1,235 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  Box,
+  Container,
+  Typography,
+  CircularProgress,
+  styled,
+  Divider,
+  Button,
+} from '@mui/material';
+import { fetchRoundDetailsRequest, clearRoundDetails } from '../store/slices/roundsSlice';
+import type { RootState } from '../store';
+import { GooseArt } from './GooseArt';
+
+const BorderBox = styled(Box)`
+  border: 1px solid ${props => props.theme.palette.divider};
+  border-radius: ${props => props.theme.shape.borderRadius}px;
+  padding: ${props => props.theme.spacing(3)};
+`;
+
+const Header = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${props => props.theme.spacing(2)};
+`;
+
+const StatusText = styled(Typography)<{ status: 'active' | 'cooldown' | 'finished' }>(
+  ({ theme, status }) => ({
+    textAlign: 'center',
+    marginTop: theme.spacing(2),
+    color:
+      status === 'active'
+        ? theme.palette.success.main
+        : status === 'cooldown'
+        ? theme.palette.warning.main
+        : theme.palette.text.secondary,
+  })
+);
+
+const TimeText = styled(Typography)`
+  text-align: center;
+  margin-bottom: ${props => props.theme.spacing(2)};
+`;
+
+const StatsBox = styled(Box)`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: ${props => props.theme.spacing(1)} ${props => props.theme.spacing(4)};
+  align-items: baseline;
+  margin-top: ${props => props.theme.spacing(2)};
+`;
+
+const RoundDetails: React.FC = () => {
+  const { roundId } = useParams<{ roundId: string }>();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentRoundDetails: details, loading, error } = useSelector((state: RootState) => state.rounds);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [timeLeft, setTimeLeft] = useState<string>('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (roundId) {
+      // Initial fetch
+      dispatch(fetchRoundDetailsRequest(Number(roundId)));
+
+      // Refresh data every 30 seconds instead of every second
+      const interval = setInterval(() => {
+        dispatch(fetchRoundDetailsRequest(Number(roundId)));
+      }, 30000);
+
+      return () => {
+        clearInterval(interval);
+        dispatch(clearRoundDetails());
+      };
+    }
+  }, [dispatch, roundId]);
+
+  useEffect(() => {
+    if (details) {
+      const updateTimer = () => {
+        const now = new Date().getTime();
+        const start = new Date(details.round.startAt).getTime();
+        const end = new Date(details.round.endAt).getTime();
+
+        if (now < start) {
+          // Cooldown phase - calculate remaining time until start
+          const timeUntilStart = Math.ceil((start - now) / 1000);
+          const hours = Math.floor(timeUntilStart / 3600);
+          const minutes = Math.floor((timeUntilStart % 3600) / 60);
+          const seconds = timeUntilStart % 60;
+
+          const timeString = hours > 0
+            ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+            : `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+          setTimeLeft(timeString);
+          setIsTransitioning(false);
+        } else if (now >= start && now < end) {
+          const timeUntilEnd = Math.ceil((end - now) / 1000);
+          const minutes = Math.floor(timeUntilEnd / 60);
+          const seconds = timeUntilEnd % 60;
+          setTimeLeft(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+          setIsTransitioning(false);
+        } else {
+          setTimeLeft('');
+          setIsTransitioning(true);
+        }
+      };
+
+      updateTimer();
+
+      const timer = setInterval(updateTimer, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [details]);
+
+  const handleBack = () => {
+    navigate('/rounds');
+  };
+
+  if (loading && !details) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" flexDirection="column" alignItems="center" gap={2} minHeight="400px" pt={4}>
+        <Typography color="error">{error}</Typography>
+        <Button variant="outlined" onClick={handleBack}>
+          Back to Rounds
+        </Button>
+      </Box>
+    );
+  }
+
+  if (!details) {
+    return null;
+  }
+
+  const { round, timeUntilStart, winner, userPoints } = details;
+  const now = new Date().getTime();
+  const start = new Date(round.startAt).getTime();
+  const end = new Date(round.endAt).getTime();
+
+  let status: 'active' | 'cooldown' | 'finished';
+  if (timeUntilStart > 0 || now < start) {
+    status = 'cooldown';
+  } else if (now >= start && now < end) {
+    status = 'active';
+  } else {
+    status = 'finished';
+  }
+
+  const getStatusText = () => {
+    switch (status) {
+      case 'active':
+        return 'Раунд активен!';
+      case 'cooldown':
+        return 'Cooldown';
+      case 'finished':
+        return 'Раунд завершен';
+    }
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <Box sx={{ mb: 2 }}>
+        <Button variant="outlined" onClick={handleBack} sx={{ mb: 2 }}>
+          ← Назад к списку раундов
+        </Button>
+      </Box>
+      <BorderBox>
+        <Header>
+          <Typography variant="h5">
+            {getStatusText()}
+          </Typography>
+          <Typography variant="h6">
+            {user?.username}
+          </Typography>
+        </Header>
+
+        <Divider sx={{ mb: 3 }} />
+
+        <Box sx={{ cursor: status === 'active' ? 'pointer' : 'default' }}>
+          <GooseArt />
+        </Box>
+
+        <StatusText variant="h6" status={status}>
+          {getStatusText()}
+        </StatusText>
+
+        {status !== 'finished' && timeLeft && (
+          <TimeText variant="h6">
+            {status === 'cooldown' ? 'До начала раунда: ' : 'До конца осталось: '}
+            {timeLeft}
+          </TimeText>
+        )}
+
+        {status === 'finished' ? (
+          <>
+            <Divider sx={{ my: 2 }} />
+            <StatsBox>
+              <Typography variant="body1">Всего</Typography>
+              <Typography variant="body1" fontWeight="bold">{round.totalPoints}</Typography>
+
+              {winner && (
+                <>
+                  <Typography variant="body1">Победитель - {winner.username}</Typography>
+                  <Typography variant="body1" fontWeight="bold">{winner.score}</Typography>
+                </>
+              )}
+
+              <Typography variant="body1">Мои очки</Typography>
+              <Typography variant="body1" fontWeight="bold">{userPoints}</Typography>
+            </StatsBox>
+          </>
+        ) : (
+          <Typography variant="h6" align="center">
+            Мои очки - {userPoints}
+          </Typography>
+        )}
+      </BorderBox>
+    </Container>
+  );
+};
+
+export default RoundDetails;
