@@ -1,54 +1,112 @@
-# React + TypeScript + Vite
+# 🦢 Goose Game Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern browser game where players compete to tap a virtual goose as fast as possible!  
+This is the frontend for the tech task ["The Last of Guss"](https://github.com/round-squares/tech-task-for-interview/wiki#%D0%BC%D0%BE%D0%BA%D0%B0%D0%BF%D1%8B).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tech Stack
 
-## Expanding the ESLint configuration
+- **React 19** + **TypeScript** — UI and logic
+- **Vite** — Lightning-fast build tool
+- **Redux Toolkit** — State management
+- **Redux-Saga** — Side effects and async flows
+- **Material-UI (MUI)** — Beautiful, accessible UI components
+- **Axios** — HTTP client for API requests
+- **React Router DOM** — Routing and protected routes
+- **JS-Cookie** — Cookie utilities for session persistence
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🎮 Game Description
+
+Players compete in rounds to tap the goose and score points.  
+- Each round has a start and end time, with a configurable cooldown before it begins.
+- **1 tap = 1 point**, every 11th tap gives **10 points**.
+- Only active rounds accept taps.
+- Special rules for users named "Nikita" (their taps don't count) and "admin" (can create rounds).
+
+See the [original task and mockups (RU)](https://github.com/round-squares/tech-task-for-interview/wiki#%D0%BC%D0%BE%D0%BA%D0%B0%D0%BF%D1%8B) for more details.
+
+---
+
+## ✨ Features
+
+- **Authentication**: Login, session persistence via cookies, role-based access (admin/survivor/nikita)
+- **Rounds List**: View all rounds, their status (active, cooldown, finished), and details
+- **Admin Controls**: Admins can create new rounds
+- **Game Round UI**: Tap the goose, see your score update in real time, live countdowns
+- **Round Details**: View winner, total points, and your own score after each round
+- **Responsive & Beautiful**: Built with Material-UI, mobile-friendly, and visually appealing
+- **Robust State Management**: Redux Toolkit + Saga for scalable, maintainable logic
+- **API Integration**: All data fetched from a REST API backend (see `src/config/api.ts`)
+
+---
+
+## 🌐 Live Demo
+
+> **Try it now:** [goose-fe.vercel.app](https://goose-fe.vercel.app/)
+
+### Test Users
+- **Admin:** `admin` / `admin`
+- **Nikita:** `nikita` / `nikita`
+- **Any other user:** `other` / `other`
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Install dependencies
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Start the development server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run dev
 ```
+
+The app will be available at [http://localhost:5173](http://localhost:5173).
+
+### 3. Build for production
+
+```bash
+npm run build
+```
+
+### 4. Lint the code
+
+```bash
+npm run lint
+```
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+  components/      # React components (RoundsList, LoginForm, RoundDetails, etc.)
+  config/          # API config and endpoints
+  store/           # Redux store, slices, sagas, hooks
+  utils/           # Utility functions (date formatting, cookies, etc.)
+  assets/          # Static assets (images, etc.)
+  App.tsx          # Main app component
+  main.tsx         # Entry point
+```
+
+---
+
+## 🔗 Useful Links
+
+- [Task & Mockups (RU)](https://github.com/round-squares/tech-task-for-interview/wiki#%D0%BC%D0%BE%D0%BA%D0%B0%D0%BF%D1%8B)
+- [Material-UI Documentation](https://mui.com/)
+- [Redux Toolkit](https://redux-toolkit.js.org/)
+- [Redux-Saga](https://redux-saga.js.org/)
+- [Vite](https://vitejs.dev/)
+
+---
+
+_Made with ❤️ for the Goose Game tech task_
