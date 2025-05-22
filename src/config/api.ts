@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   auth: {
     login: `${BASE_URL}/auth/login`,
     logout: `${BASE_URL}/auth/logout`,
+    health: `${BASE_URL}/health`,
   },
   rounds: {
     list: `${BASE_URL}/rounds`,
