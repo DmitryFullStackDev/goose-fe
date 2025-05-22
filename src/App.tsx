@@ -1,6 +1,6 @@
 import { Provider } from 'react-redux';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { CssBaseline, Container, Box } from '@mui/material';
+import {CssBaseline, Container, Box, CircularProgress, Typography} from '@mui/material';
 import { store } from './store';
 import { LoginForm } from './components/LoginForm';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -8,7 +8,7 @@ import RoundsList from './components/RoundsList';
 import RoundDetails from './components/RoundDetails';
 import { useDispatch, useSelector } from 'react-redux';
 import ServerWakeUpLoader from './components/ServerWakeUpLoader';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { restoreSessionRequest } from './store/slices/authSlice';
 import {useTypedSelector} from "./store/hooks";
 
@@ -26,7 +26,15 @@ const AppContent = () => {
   }
 
   if (loadingRestoreSession) {
-    return <div>restoring session...</div>;
+    return (
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh">
+            <CircularProgress />
+            <Typography mt={2} variant="h6">Waking up server, please wait...</Typography>
+            <Typography mt={1} color="text.secondary">
+               Restoring session...
+            </Typography>
+        </Box>
+    );
   }
 
   return (
