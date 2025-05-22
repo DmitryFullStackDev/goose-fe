@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-//const BASE_URL = 'http://localhost:3000';
+// BASE_URL = 'http://localhost:3000';
 const BASE_URL = 'https://goosebe.onrender.com';
 
 export const API_ENDPOINTS = {
@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
     login: `${BASE_URL}/auth/login`,
     logout: `${BASE_URL}/auth/logout`,
     health: `${BASE_URL}/health`,
+    me: `${BASE_URL}/auth/me`,
   },
   rounds: {
     list: `${BASE_URL}/rounds`,
@@ -23,8 +24,19 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
 });
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 apiClient.interceptors.response.use(
   (response) => response,

@@ -1,6 +1,5 @@
 import {createAction, createSlice} from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { getCookie, setCookie, removeCookie } from '../../utils/cookies';
 
 interface User {
   id: number;
@@ -12,12 +11,14 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  loadingRestoreSession: boolean
 }
 
 const initialState: AuthState = {
-  user: getCookie('USER'),
+  user: null,
   loading: false,
   error: null,
+  loadingRestoreSession: false
 };
 
 export const logoutActionSaga = createAction<string>('logoutActionSaga')
@@ -34,7 +35,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.loading = false;
       state.error = null;
-      setCookie('USER', action.payload.user);
+      state.loadingRestoreSession = false
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -43,16 +44,14 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.error = null;
-      removeCookie('USER');
+      state.loadingRestoreSession = false
     },
-    restoreSession: (state) => {
-      const user = getCookie('USER');
-      if (user) {
-        state.user = user;
-      }
+    restoreSessionRequest: (state) => {
+      state.loadingRestoreSession = true;
+      state.error = null;
     },
   },
 });
 
-export const { loginRequest, loginSuccess, loginFailure, logout, restoreSession } = authSlice.actions;
+export const { loginRequest, loginSuccess, loginFailure, logout, restoreSessionRequest } = authSlice.actions;
 export default authSlice.reducer;

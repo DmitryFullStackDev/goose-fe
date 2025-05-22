@@ -18,7 +18,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { fetchRoundsRequest, createRoundRequest } from '../store/slices/roundsSlice';
 import { formatLocalDateTime } from '../utils/dateFormat';
 import {useTypedSelector} from "../store/hooks";
-import {logout, logoutActionSaga} from "../store/slices/authSlice";
+import {logoutActionSaga} from "../store/slices/authSlice";
 
 const RoundCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),

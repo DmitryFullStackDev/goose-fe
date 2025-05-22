@@ -6,21 +6,27 @@ import { LoginForm } from './components/LoginForm';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import RoundsList from './components/RoundsList';
 import RoundDetails from './components/RoundDetails';
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { restoreSession } from './store/slices/authSlice';
 import ServerWakeUpLoader from './components/ServerWakeUpLoader';
+import { useEffect } from 'react';
+import { restoreSessionRequest } from './store/slices/authSlice';
+import {useTypedSelector} from "./store/hooks";
 
 const AppContent = () => {
+  const serverStatus = useTypedSelector((state) => state.server?.status || 'unknown');
+  const loadingRestoreSession = useTypedSelector((state) => state.auth.loadingRestoreSession);
   const dispatch = useDispatch();
-  const serverStatus = useSelector((state: any) => state.server?.status || 'unknown');
 
   useEffect(() => {
-    dispatch(restoreSession());
+    dispatch(restoreSessionRequest());
   }, [dispatch]);
 
   if (serverStatus === 'waking' || serverStatus === 'unknown') {
     return <ServerWakeUpLoader />;
+  }
+
+  if (loadingRestoreSession) {
+    return <div>restoring session...</div>;
   }
 
   return (
