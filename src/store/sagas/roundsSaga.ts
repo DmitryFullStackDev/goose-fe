@@ -67,9 +67,6 @@ function* tapSaga(action: PayloadAction<number>): Generator<any, void, any> {
     }));
   } catch (error: any) {
     console.error('Tap error:', error.response?.data || error.message);
-    yield put(tapFailure(
-      error.response?.data?.message || error.message || 'Failed to tap'
-    ));
   }
 }
 
@@ -127,4 +124,4 @@ export function* watchRoundsSaga(): Generator {
   yield takeLatest(createRoundRequest.type, createRoundSaga);
   yield takeLatest(fetchRoundDetailsRequest.type, fetchRoundDetailsSaga);
   yield takeLatest(fetchRoundRequest.type, fetchRoundSaga);
-} 
+}
