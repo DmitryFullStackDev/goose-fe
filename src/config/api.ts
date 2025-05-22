@@ -6,6 +6,7 @@ const BASE_URL = 'https://goosebe.onrender.com';
 export const API_ENDPOINTS = {
   auth: {
     login: `${BASE_URL}/auth/login`,
+    logout: `${BASE_URL}/auth/logout`,
   },
   rounds: {
     list: `${BASE_URL}/rounds`,

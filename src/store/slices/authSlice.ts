@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createAction, createSlice} from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { getCookie, setCookie, removeCookie } from '../../utils/cookies';
 
@@ -19,6 +19,8 @@ const initialState: AuthState = {
   loading: false,
   error: null,
 };
+
+export const logoutActionSaga = createAction<string>('logoutActionSaga')
 
 const authSlice = createSlice({
   name: 'auth',

@@ -14,9 +14,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { fetchRoundsRequest, createRoundRequest } from '../store/slices/roundsSlice';
 import { formatLocalDateTime } from '../utils/dateFormat';
 import {useTypedSelector} from "../store/hooks";
+import {logout, logoutActionSaga} from "../store/slices/authSlice";
 
 const RoundCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
@@ -53,6 +55,10 @@ const RoundsList: React.FC = () => {
     dispatch(fetchRoundsRequest());
   };
 
+  const handleLogout = () => {
+    dispatch(logoutActionSaga());
+  };
+
   return (
     <Container maxWidth="md">
       <Box
@@ -77,10 +83,10 @@ const RoundsList: React.FC = () => {
               Список РАУНДОВ
             </Typography>
             <Tooltip title="Обновить список">
-              <IconButton 
-                onClick={handleRefresh} 
+              <IconButton
+                onClick={handleRefresh}
                 disabled={loading}
-                sx={{ 
+                sx={{
                   animation: loading ? 'spin 1s linear infinite' : 'none',
                   '@keyframes spin': {
                     '0%': {
@@ -96,9 +102,16 @@ const RoundsList: React.FC = () => {
               </IconButton>
             </Tooltip>
           </Box>
-          <Typography variant="h6" component="div">
-            {user?.username}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6" component="div">
+              {user?.username}
+            </Typography>
+            <Tooltip title="Выйти">
+              <IconButton onClick={handleLogout}>
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
 
         {user?.role === 'admin' && !loading && (
