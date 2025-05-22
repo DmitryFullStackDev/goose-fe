@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, takeEvery } from 'redux-saga/effects';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import {
   fetchRoundsRequest,
@@ -120,7 +120,7 @@ function* fetchRoundSaga(action: PayloadAction<string>): Generator<any, void, an
 
 export function* watchRoundsSaga(): Generator {
   yield takeLatest(fetchRoundsRequest.type, fetchRoundsSaga);
-  yield takeLatest(tapRequest.type, tapSaga);
+  yield takeEvery(tapRequest.type, tapSaga);
   yield takeLatest(createRoundRequest.type, createRoundSaga);
   yield takeLatest(fetchRoundDetailsRequest.type, fetchRoundDetailsSaga);
   yield takeLatest(fetchRoundRequest.type, fetchRoundSaga);
