@@ -5,7 +5,15 @@ import { wakeUpServerSuccess, wakeUpServerFailure, wakeUpServerRequest } from '.
 export function* wakeUpServerSaga() {
   while (true) {
     try {
-      yield axios.get('/health', { timeout: 5000, withCredentials: true });
+      yield axios.get(`/health?t=${Date.now()}`, {
+        timeout: 60000,
+        withCredentials: true,
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      });
       yield put(wakeUpServerSuccess());
       return;
     } catch (error) {
