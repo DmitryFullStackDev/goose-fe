@@ -7,6 +7,11 @@ const AsciiArtBox = styled(Box)`
   user-select: none;
   width: 300px;
   margin: 0 auto;
+
+  @media (max-width: 490px) {
+    width: 220px;
+    font-size: 11px;
+  }
 `;
 
 export const GooseArt = () => {
