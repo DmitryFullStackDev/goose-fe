@@ -211,11 +211,11 @@ const RoundDetails: React.FC = () => {
   const getStatusText = () => {
     switch (counterStatus) {
       case CounterStatusEnum.active:
-        return 'Раунд активен!';
+        return 'Active!';
       case CounterStatusEnum.cooldown:
         return 'Cooldown';
       case CounterStatusEnum.finished:
-        return 'Раунд завершен';
+        return 'Finished';
     }
   };
 
@@ -227,7 +227,7 @@ const RoundDetails: React.FC = () => {
     <Container maxWidth="sm">
       <Box sx={{ mb: 2 }}>
         <Button variant="outlined" onClick={handleBack} sx={{ mb: 2 }}>
-          ← Назад к списку раундов
+          ← Back to round list
         </Button>
       </Box>
       <BorderBox>
@@ -257,30 +257,30 @@ const RoundDetails: React.FC = () => {
 
         {!isFinished && timeLeft && (
           <TimeText variant="h6">
-            {isCooldown ? 'До начала раунда: ' : 'До конца осталось: '}
+            {isCooldown ? 'Before the round starts: ' : 'Time left until the end: '}
             {timeLeft}
           </TimeText>
         )}
 
         {!isFinished ? (
           <Typography variant="h6" align="center">
-            Мои очки - {userPoints}
+            User points - {userPoints}
           </Typography>
         ) : (
           <>
             <Divider sx={{ my: 2 }} />
             <StatsBox>
-              <Typography variant="body1">Всего</Typography>
+              <Typography variant="body1">Total</Typography>
               <Typography variant="body1" fontWeight="bold">{round.totalPoints}</Typography>
 
               {winner && (
                 <>
-                  <Typography variant="body1">Победитель - {winner.username}</Typography>
+                  <Typography variant="body1">Winner - {winner.username}</Typography>
                   <Typography variant="body1" fontWeight="bold">{winner.score}</Typography>
                 </>
               )}
 
-              <Typography variant="body1">Мои очки</Typography>
+              <Typography variant="body1">User points</Typography>
               <Typography variant="body1" fontWeight="bold">{userPoints}</Typography>
             </StatsBox>
           </>

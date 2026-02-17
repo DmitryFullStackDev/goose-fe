@@ -80,9 +80,9 @@ const RoundsList: React.FC = () => {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography variant="h4" component="h1">
-              Список РАУНДОВ
+              Round list
             </Typography>
-            <Tooltip title="Обновить список">
+            <Tooltip title="Refresh list">
               <IconButton
                 onClick={handleRefresh}
                 disabled={loading}
@@ -106,7 +106,7 @@ const RoundsList: React.FC = () => {
             <Typography variant="h6" component="div">
               {user?.username}
             </Typography>
-            <Tooltip title="Выйти">
+            <Tooltip title="Exit">
               <IconButton onClick={handleLogout}>
                 <LogoutIcon />
               </IconButton>
@@ -121,7 +121,7 @@ const RoundsList: React.FC = () => {
               color="primary"
               onClick={handleCreateRound}
             >
-              Создать раунд
+              Create round
             </Button>
           </Box>
         )}
@@ -169,7 +169,7 @@ const RoundsList: React.FC = () => {
                     </Typography>
                     <Box sx={{ mt: 2, borderTop: 1, borderColor: 'divider', pt: 2 }}>
                       <StatusText variant="body1" status={round.status || 'finished'}>
-                        Статус: {round.status === 'active' ? 'Активен' : round.status === 'cooldown' ? 'Cooldown' : 'Завершен'}
+                        Status: {round.status === 'active' ? 'Active' : round.status === 'cooldown' ? 'Cooldown' : 'Finished'}
                       </StatusText>
                     </Box>
                   </Box>
